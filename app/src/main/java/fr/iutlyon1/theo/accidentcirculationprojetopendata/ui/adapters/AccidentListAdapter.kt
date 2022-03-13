@@ -52,12 +52,9 @@ class AccidentListAdapter(
 
         val layoutItem : View
         val mInflater = LayoutInflater.from(context)
+
         //(1) : Réutilisation du layout
-        if (convertView == null) {
-            layoutItem = mInflater.inflate(R.layout.accident_card_layout, parent, false)
-        } else {
-            layoutItem = convertView
-        }
+        layoutItem = convertView ?: mInflater.inflate(R.layout.accident_card_layout, parent, false)
 
         var viewHolder = ViewHolder (layoutItem.findViewById(R.id.textView))
         if(layoutItem.tag != null) {
@@ -67,7 +64,7 @@ class AccidentListAdapter(
         layoutItem.tag = viewHolder
 
 
-        viewHolder.textView.setText(listAccident[position].id.toString())
+        viewHolder.textView.text = listAccident[position].date
 
 
         return layoutItem
