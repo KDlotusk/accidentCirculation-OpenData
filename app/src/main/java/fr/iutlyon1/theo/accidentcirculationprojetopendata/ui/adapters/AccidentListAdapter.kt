@@ -13,8 +13,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class AccidentListAdapter(
-    val context: Context,
-    val listAccident : ArrayList<Accident>
+    private val context: Context,
+    private val listAccident : ArrayList<Accident>
 ) : BaseAdapter() {
 
 
@@ -30,7 +30,22 @@ class AccidentListAdapter(
         return index.toLong()
     }
 
+    fun clear() {
+        listAccident.clear()
+        notifyDataSetChanged()
+    }
 
+
+    fun addAll(tweetList: ArrayList<Accident>) {
+        listAccident.addAll(tweetList)
+        notifyDataSetChanged()
+    }
+
+    fun print() {
+        for(accident in listAccident) {
+            println("accident => ${accident.date}")
+        }
+    }
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
