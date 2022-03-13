@@ -219,7 +219,7 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
                             val nbRows = parameters.getInt("rows")
                             askCellular(nbRows)
 
-                            while(canUseCellular == 0) {
+                            while(canUseCellular == 0 && checkCellularInternet(context)) {
                                 Log.i("AsyncTask", "waiting for user answer")
                             }
                             if(canUseCellular == -1)
