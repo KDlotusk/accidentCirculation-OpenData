@@ -32,6 +32,12 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
     private var canUseCellular = 0
 
+    private fun testOrUnknown(fields : JSONObject ,value : String) : String
+        = if(fields.has(value))
+            fields.getString(value)
+        else
+            "unknown"
+
     private fun parsing(jsonLine: JSONObject) : Int {
         val records = jsonLine.getJSONArray("records")
         val nbRecords = jsonLine.getJSONObject("parameters").getInt("rows")
@@ -45,9 +51,10 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
             val fields = record.getJSONObject("fields")
 
             // address
-            val adr : String =  fields.getString("adr")
-            val dep : String =  fields.getString("dep")
-            val com: String  =  fields.getString("com")
+            val adr : String =  testOrUnknown(fields,"adr")
+
+            val dep : String =  testOrUnknown(fields,"dep")
+            val com: String  =  testOrUnknown(fields,"com")
 
             val lat: Long =     fields.getLong("lat")
             val long: Long =    fields.getLong("long")
@@ -55,31 +62,22 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
             // location
             val address : Address = Address(adr, dep, com, lat, long)
 
-            val lum: String =   fields.getString("lum")
-            val prof: String = if(fields.has("prof"))
-                fields.getString("prof")
-            else
-                "unknown"
+            val lum: String =   testOrUnknown(fields,"lum")
+            val prof: String =  testOrUnknown(fields,"prof")
 
-            val surf : String = if(fields.has("prof"))
-                fields.getString("surf")
-            else
-                "unknown"
 
-            val infra : String = if(fields.has("infra"))
-                fields.getString("infra")
-            else
-                "unknown"
+            val surf : String = testOrUnknown(fields,"surf")
 
-            val situ : String = if(fields.has("situ"))
-                fields.getString("situ")
-            else
-                "unknown"
+            val infra : String =testOrUnknown(fields,"infra")
+
+
+            val situ : String = testOrUnknown(fields,"situ")
+
 
             val location = Location(lum, address, prof, surf, infra,situ)
 
             //pedestrian
-            val gravs: List<String> = fields.getString("grav").split(',')
+            val gravs: List<String> = testOrUnknown(fields,"grav").split(',')
 
             val pedestrians = ArrayList<Pedestrian>()
             for(grav in gravs)
@@ -87,8 +85,8 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
             //vehicule
             val vehicules = ArrayList<Vehicule>()
-            val catvs: List<String> = fields.getString("catv").split(',')
-            val manvs: List<String> = fields.getString("manv").split(',') // careful, can sometimes be only one
+            val catvs: List<String> = testOrUnknown(fields,"catv").split(',')
+            val manvs: List<String> = testOrUnknown(fields,"manv").split(',') // careful, can sometimes be only one
             for((index, catv) in catvs.withIndex()) {
                 if(index < manvs.size)
                     vehicules.add(Vehicule(catv, manvs[index]))
@@ -98,15 +96,15 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
 
             //accident :
-            val id : String =    record.getString("recordid")
+            val id : String =    testOrUnknown(fields,"recordid")
 
-            val date : String =   fields.getString("datetime").split('T')[0]
+            val date : String =   testOrUnknown(fields,"datetime").split('T')[0]
 
             accidents.add(Accident(id, date, pedestrians, vehicules, location))
         }
         publishProgress(nbRecords, accidents.size)
 
-        return (accidents.size / nbRecords * 100).toInt()
+        return (accidents.size.toFloat() / nbRecords.toFloat() * 100).toInt()
     }
 
 
@@ -232,7 +230,7 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
             }
             jsonLine = sb.toString()
 
-            Log.d("AsyncTask", "flux =$jsonLine")
+            //Log.d("AsyncTask", "flux =$jsonLine")
             input.close()
         }
 
@@ -270,7 +268,12 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
     override fun onPostExecute(result: String?) {
         swipeRefreshLayout.isRefreshing = false
+
+        accidents.reverse()
+
+
         adapter!!.notifyDataSetChanged()
+
 
 
         for(accident in accidents) {
