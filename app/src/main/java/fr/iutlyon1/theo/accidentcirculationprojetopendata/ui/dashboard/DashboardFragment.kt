@@ -81,10 +81,11 @@ class DashboardFragment : Fragment() {
     }
 
     private fun loadData(adapter : AccidentListAdapter, dashboardViewModel : DashboardViewModel, swipeRefreshLayout : SwipeRefreshLayout) {
+        dashboardViewModel.nbRws+=10
 
         val asyncTask = ApiConnectAsyncTask(activity as FragmentActivity, swipeRefreshLayout)
         asyncTask.execute(
-            "https://public.opendatasoft.com/api/records/1.0/search/?dataset=accidents-corporels-de-la-circulation-millesime&q=&facet=datetime&facet=nom_com&facet=lum&facet=agg&facet=int&facet=atm&facet=col&facet=surf&facet=circ&facet=catr&facet=plan&facet=prof&facet=infra&facet=situ&facet=an_nais&facet=sexe&facet=actp&facet=grav&facet=secu&facet=secu_utl&facet=locp&facet=place&facet=catu&facet=etatp&facet=trajet&facet=choc&facet=manv&facet=obsm&facet=obs&facet=catv&facet=occutc&facet=gps&facet=com_name&facet=dep_code&facet=dep_name&facet=epci_code&facet=epci_name&facet=reg_code&facet=reg_name&facet=com_code",
+            dashboardViewModel.url,
             adapter,
             dashboardViewModel.accidents
         )
