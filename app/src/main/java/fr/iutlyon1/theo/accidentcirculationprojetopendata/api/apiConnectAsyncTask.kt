@@ -66,8 +66,8 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
             else
                 "unknown"
 
-            val infra : String = if(fields.has("situ"))
-                fields.getString("situ")
+            val infra : String = if(fields.has("infra"))
+                fields.getString("infra")
             else
                 "unknown"
 
