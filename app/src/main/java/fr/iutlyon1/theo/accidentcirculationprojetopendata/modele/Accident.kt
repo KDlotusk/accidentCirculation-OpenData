@@ -4,7 +4,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class Accident(
-    val id : Long,
+    val id : String,
     val date : String,
 
     val pedestrians : ArrayList<Pedestrian>,
