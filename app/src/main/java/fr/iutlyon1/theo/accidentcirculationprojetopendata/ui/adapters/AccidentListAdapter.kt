@@ -18,28 +18,19 @@ class AccidentListAdapter(
 ) : BaseAdapter() {
 
 
-    override fun getCount(): Int {
-        return listAccident.size
-    }
-
-    override fun getItem(index : Int): Any {
-        return listAccident[index]
-    }
-
-    override fun getItemId(index: Int): Long {
-        return index.toLong()
-    }
-
-    fun clear() {
-        listAccident.clear()
-        notifyDataSetChanged()
-    }
+    override fun getCount(): Int =
+        listAccident.size
 
 
-    fun addAll(tweetList: ArrayList<Accident>) {
-        listAccident.addAll(tweetList)
-        notifyDataSetChanged()
-    }
+    override fun getItem(index : Int): Any =
+        listAccident[index]
+
+
+    override fun getItemId(index: Int): Long =
+        index.toLong()
+
+
+
 
     fun print() {
         for(accident in listAccident) {
@@ -63,14 +54,11 @@ class AccidentListAdapter(
 
         layoutItem.tag = viewHolder
 
-
         viewHolder.textView.text = listAccident[position].date
 
 
         return layoutItem
     }
-
-
 
 
 }
