@@ -3,9 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1905" />
         <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/drawable/ic_noInternet_background.xml" value="0.177" />
         <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/drawable/ic_no_internet_background.xml" value="0.171" />
-        <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/layout/accident_card_layout.xml" value="0.2864583333333333" />
+        <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/drawable/im_default_background.xml" value="0.1" />
+        <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/drawable/im_sans_lamp_background.xml" value="0.1905" />
+        <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/layout/accident_card_layout.xml" value="0.335" />
         <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/layout/fragment_dashboard.xml" value="0.25" />
         <entry key="..\:/Users/theol/Desktop/Maestro/cours/2A/S4/Informatique/android/accidentCirculationProjetOpenData/app/src/main/res/layout/fragment_home.xml" value="0.1" />

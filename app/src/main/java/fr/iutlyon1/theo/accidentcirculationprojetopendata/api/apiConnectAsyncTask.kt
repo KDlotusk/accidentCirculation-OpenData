@@ -1,6 +1,5 @@
 package fr.iutlyon1.theo.accidentcirculationprojetopendata.api
 
-import android.app.AlertDialog
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -11,7 +10,6 @@ import android.util.Log
 import android.view.View
 import android.widget.GridView
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
@@ -32,11 +30,16 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
     private var canUseCellular = 0
 
-    private fun testOrUnknown(fields : JSONObject ,value : String) : String
-        = if(fields.has(value))
-            fields.getString(value)
-        else
-            "unknown"
+    private fun testOrUnknownString(fields : JSONObject, value : String) : String
+            = if(fields.has(value))
+        fields.getString(value)
+    else
+        "unknown"
+    private fun testOrUnknownLong(fields : JSONObject, value : String) : Long
+            = if(fields.has(value))
+        fields.getLong(value)
+    else
+        -1
 
     private fun parsing(jsonLine: JSONObject) : Int {
         val records = jsonLine.getJSONArray("records")
@@ -51,33 +54,33 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
             val fields = record.getJSONObject("fields")
 
             // address
-            val adr : String =  testOrUnknown(fields,"adr")
+            val adr : String =  testOrUnknownString(fields,"adr")
 
-            val dep : String =  testOrUnknown(fields,"dep")
-            val com: String  =  testOrUnknown(fields,"com")
+            val dep : String =  testOrUnknownString(fields,"dep")
+            val com: String  =  testOrUnknownString(fields,"com")
 
-            val lat: Long =     fields.getLong("lat")
-            val long: Long =    fields.getLong("long")
+            val lat: Long =     testOrUnknownLong(fields,"lat")
+            val long: Long =    testOrUnknownLong(fields,"long")
 
             // location
             val address : Address = Address(adr, dep, com, lat, long)
 
-            val lum: String =   testOrUnknown(fields,"lum")
-            val prof: String =  testOrUnknown(fields,"prof")
+            val lum: String =   testOrUnknownString(fields,"lum")
+            val prof: String =  testOrUnknownString(fields,"prof")
 
 
-            val surf : String = testOrUnknown(fields,"surf")
+            val surf : String = testOrUnknownString(fields,"surf")
 
-            val infra : String =testOrUnknown(fields,"infra")
+            val infra : String =testOrUnknownString(fields,"infra")
 
 
-            val situ : String = testOrUnknown(fields,"situ")
+            val situ : String = testOrUnknownString(fields,"situ")
 
 
             val location = Location(lum, address, prof, surf, infra,situ)
 
             //pedestrian
-            val gravs: List<String> = testOrUnknown(fields,"grav").split(',')
+            val gravs: List<String> = testOrUnknownString(fields,"grav").split(',')
 
             val pedestrians = ArrayList<Pedestrian>()
             for(grav in gravs)
@@ -85,8 +88,8 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
             //vehicule
             val vehicules = ArrayList<Vehicule>()
-            val catvs: List<String> = testOrUnknown(fields,"catv").split(',')
-            val manvs: List<String> = testOrUnknown(fields,"manv").split(',') // careful, can sometimes be only one
+            val catvs: List<String> = testOrUnknownString(fields,"catv").split(',')
+            val manvs: List<String> = testOrUnknownString(fields,"manv").split(',') // careful, can sometimes be only one
             for((index, catv) in catvs.withIndex()) {
                 if(index < manvs.size)
                     vehicules.add(Vehicule(catv, manvs[index]))
@@ -96,9 +99,9 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
 
             //accident :
-            val id : String =    testOrUnknown(fields,"recordid")
+            val id : String =    testOrUnknownString(fields,"recordid")
 
-            val date : String =   testOrUnknown(fields,"datetime").split('T')[0]
+            val date : String =   testOrUnknownString(fields,"datetime").split('T')[0]
 
             accidents.add(Accident(id, date, pedestrians, vehicules, location))
         }
@@ -270,8 +273,7 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
         swipeRefreshLayout.isRefreshing = false
 
         accidents.reverse()
-
-
+        
         adapter!!.notifyDataSetChanged()
 
 
