@@ -47,7 +47,7 @@ class AccidentListAdapter(
         //(1) : Réutilisation du layout
         layoutItem = convertView ?: mInflater.inflate(R.layout.accident_card_layout, parent, false)
 
-        var viewHolder = ViewHolder (layoutItem.findViewById(R.id.textView))
+        var viewHolder = ViewHolder (layoutItem.findViewById(R.id.dateOfWreck))
         if(layoutItem.tag != null) {
             viewHolder = layoutItem.tag as ViewHolder
         }
@@ -59,8 +59,6 @@ class AccidentListAdapter(
 
         return layoutItem
     }
-
-
 }
 class ViewHolder (var textView: TextView)
 
