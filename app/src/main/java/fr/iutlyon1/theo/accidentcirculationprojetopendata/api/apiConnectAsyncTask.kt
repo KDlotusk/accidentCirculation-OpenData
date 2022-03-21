@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.widget.GridView
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
@@ -265,8 +266,6 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
         val currentRow = progress[1] as Int
 
         println("currently at ${(currentRow.toFloat()/totalRow.toFloat()*100).toInt()}%")
-
-        Snackbar.make(context.findViewById(R.id.DashBoardGridView), "currently at ${(currentRow.toFloat()/totalRow.toFloat()*100).toInt()}%", Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onPostExecute(result: String?) {
@@ -282,7 +281,16 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
             println("accident =>" + accident.date)
         }
 
-        Snackbar.make(context.findViewById(R.id.DashBoardGridView), result!!, Snackbar.LENGTH_SHORT).show()
+        try {
+            Snackbar.make(
+                context.findViewById(R.id.DashBoardGridView),
+                result!!,
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+        catch(e : Exception) {
+            Toast.makeText(context, result!!, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCancelled() {
