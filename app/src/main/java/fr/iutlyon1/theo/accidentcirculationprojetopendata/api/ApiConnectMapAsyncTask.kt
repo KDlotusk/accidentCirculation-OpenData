@@ -1,6 +1,8 @@
 package fr.iutlyon1.theo.accidentcirculationprojetopendata.api
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.AsyncTask
@@ -9,7 +11,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.GridView
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,17 +18,19 @@ import com.google.android.material.snackbar.Snackbar
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.R
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.modele.*
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.adapters.AccidentListAdapter
+import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.lang.Exception
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.collections.ArrayList
 
-class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefreshLayout : SwipeRefreshLayout) : AsyncTask<Any, Int, String>() {
-    private var adapter : AccidentListAdapter? = null
+
+class ApiConnectMapAsyncTask(private val context : FragmentActivity, private val callBack : CallBackApi) : AsyncTask<Any, Int, String>() {
     private lateinit var accidents : ArrayList<Accident>
+    private lateinit var prefs: SharedPreferences
+
+    //TODO call back to say that it is finished
+    //TODO new api link that only takes geometry point
 
     private var canUseCellular = 0
 
@@ -104,7 +107,8 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
             val date : String =   testOrUnknownString(fields,"datetime").split('T')[0]
 
-            accidents.add(Accident(id, date, pedestrians, vehicules, location))
+            if(fields.has("lat") && fields.has("long"))
+                accidents.add(Accident(id, date, pedestrians, vehicules, location))
         }
         publishProgress(nbRecords, accidents.size)
 
@@ -182,8 +186,6 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
     }
 
     override fun onPreExecute() {
-        swipeRefreshLayout.isRefreshing = true
-
         if(!checkForInternet(context)){
 
             cancel(true)
@@ -193,10 +195,31 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
     override fun doInBackground(vararg params: Any?): String {
         val host = params[0] as String
-        adapter = params[1] as AccidentListAdapter
-        accidents = params[2] as ArrayList<Accident>
+        accidents = params[1] as ArrayList<Accident>
 
         var jsonLine = ""
+
+
+        //reading the shared preference of the app
+        prefs = context.getSharedPreferences(
+            "fr.iutlyon1.theo.accidentcirculationprojetopendata", Context.MODE_PRIVATE
+        )
+
+        canUseCellular= prefs.getInt("fr.iutlyon1.theo.accidentcirculationprojetopendata.canUseCellular", 0)
+        Log.i("canUseCelular", canUseCellular.toString())
+
+        if (canUseCellular == 0) {
+            if (checkCellularInternet(context)) {
+                //askCellular()
+                publishProgress(-1)
+
+                while(canUseCellular == 0 && checkCellularInternet(context)) {
+                    Log.i("AsyncTask", "waiting for user answer")
+                }
+                if(canUseCellular == -1)
+                    cancel(true)
+            }
+        }
 
         val url = URL(host)
         val urlConnection = url.openConnection() as HttpURLConnection
@@ -211,26 +234,6 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
                     line
                 } != null) {
                 sb.append(line)
-
-                if (canUseCellular == 0) {
-                    if (checkCellularInternet(context)) {
-                        Log.e("AsyncTask", "connected using 4g")
-                        jsonLine = sb.toString()
-                        val parameters = JSONObject(jsonLine).getJSONObject("parameters")
-                        if (parameters.has("start")) {
-                            val nbRows = parameters.getInt("rows")
-                            askCellular(nbRows)
-
-                            while(canUseCellular == 0 && checkCellularInternet(context)) {
-                                Log.i("AsyncTask", "waiting for user answer")
-                            }
-                            if(canUseCellular == -1)
-                                cancel(true)
-                        }
-                    }
-                }
-
-
             }
             jsonLine = sb.toString()
 
@@ -263,22 +266,65 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
 
     override fun onProgressUpdate(vararg progress: Int?) {
         val totalRow = progress[0] as Int
-        val currentRow = progress[1] as Int
 
-        println("currently at ${(currentRow.toFloat()/totalRow.toFloat()*100).toInt()}%")
+        if (totalRow == -1) {
+
+            // case where user is using cellular data
+            prefs = context.getSharedPreferences(
+                "fr.iutlyon1.theo.accidentcirculationprojetopendata", Context.MODE_PRIVATE
+            )
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setTitle("Title").setMessage("Your using your cellular connection, do you want to continue ?")
+
+            builder.setPositiveButton("Yes") { dialog, id ->
+                canUseCellular = 1
+                Log.i("saving preference",
+                    prefs.edit().putInt("fr.iutlyon1.theo.accidentcirculationprojetopendata.canUseCellular", canUseCellular).commit().toString())
+            }
+            builder.setNegativeButton("No") { dialog, id ->
+                canUseCellular = -1
+                Log.i("saving preference",
+                    prefs.edit().putInt("fr.iutlyon1.theo.accidentcirculationprojetopendata.canUseCellular", canUseCellular).commit().toString())
+            }
+            val alert = builder.create()
+            alert.show()
+
+
+
+            Log.e("AsyncTask", "builder")
+        }
+        else {
+            val currentRow = progress[1] as Int
+
+
+            println("currently at ${(currentRow.toFloat()/totalRow.toFloat()*100).toInt()}%")
+            //Toast.makeText( context, "currently at ${(currentRow.toFloat()/totalRow.toFloat()*100).toInt()}%", Toast.LENGTH_SHORT ).show()
+        }
     }
 
     override fun onPostExecute(result: String?) {
-        swipeRefreshLayout.isRefreshing = false
 
         accidents.reverse()
-        
-        adapter!!.notifyDataSetChanged()
 
+        //saving data
 
+        val fos: FileOutputStream?
+        val out: ObjectOutputStream?
+        try {
+            fos = context.openFileOutput("saveFile", Context.MODE_PRIVATE)
+            out = ObjectOutputStream(fos)
+
+            for(accident in accidents) {
+                out.writeObject(accident)
+            }
+            out.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
 
         for(accident in accidents) {
-            println("accident =>" + accident.date)
+            println("accident =>" + accident.pedestrians[0].grav)
         }
 
         try {
@@ -291,38 +337,45 @@ class ApiConnectAsyncTask(private val context : FragmentActivity, val swipeRefre
         catch(e : Exception) {
             Toast.makeText(context, result!!, Toast.LENGTH_SHORT).show()
         }
+
+        callBack.onFinished()
     }
 
     override fun onCancelled() {
-        swipeRefreshLayout.isRefreshing = false
 
-        val gridView : GridView = context.findViewById(R.id.DashBoardGridView)
-        val noInternetImageView : ImageView = context.findViewById(R.id.DashBoardNoInternetImageView)
+        //val gridView : GridView = context.findViewById(R.id.DashBoardGridView)
+        //val noInternetImageView : ImageView = context.findViewById(R.id.DashBoardNoInternetImageView)
 
         Snackbar.make(context.findViewById(R.id.DashBoardGridView),
             "sorry but you don't have internet access", Snackbar.LENGTH_SHORT).setAction("X") {
             // Call action functions here
         }.show()
 
-
-        gridView.visibility = View.GONE
-        noInternetImageView.visibility = View.VISIBLE
-    }
-
-
-    private fun askCellular(nbRows : Int) {
-        Looper.prepare()
-
-        Snackbar.make(context.findViewById(R.id.DashBoardGridView),
-            "Your using your cellular connection, $nbRows number of records will be downloaded, do you agree?", Snackbar.LENGTH_INDEFINITE)
-            .setAction("Yes") {
-                    canUseCellular = 1
-            }.setAction("No") {
-                    canUseCellular = -1
+        // getting the content of the saved data
+        val directory = context.getFilesDir()
+        val file = File(directory, "saveFile")
+        if(file.exists()) {
+            var fis: FileInputStream? = null
+            var _in: ObjectInputStream? = null
+            try {
+                fis = context.openFileInput("saveFile")
+                _in = ObjectInputStream(fis)
+                while (fis.available() > 0) {
+                    val accident = _in.readObject() as Accident
+                    print("add accident $accident")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace();
+            } finally {
+                _in?.close()
+                fis?.close()
             }
-            .show()
+        }
 
 
-        Log.e("AsyncTask", "builder")
+
+        //gridView.visibility = View.GONE
+        //noInternetImageView.visibility = View.VISIBLE
     }
+
 }

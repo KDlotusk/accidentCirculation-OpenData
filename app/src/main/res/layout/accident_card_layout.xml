@@ -5,7 +5,6 @@
     android:id="@+id/container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/gray"
     >
 
     <ImageView
@@ -32,15 +31,18 @@
         android:id="@+id/dateOfWreck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isNew" />
+        android:text="date of the accident"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/lum"
+        app:layout_constraintStart_toStartOf="@id/lum"
+        app:layout_constraintTop_toBottomOf="@id/isNew" />
 
     <TextView
         android:id="@+id/isNew"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="is it a new element ?"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="308dp"
@@ -48,21 +50,24 @@
 
     <ImageView
         android:id="@+id/cars"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
         android:contentDescription="numbers of cars"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status_logo"
+        app:layout_constraintBottom_toBottomOf="@id/lum"
+        app:layout_constraintStart_toEndOf="@id/nbOfCar"
         app:srcCompat="@mipmap/lg_cars_foreground" />
 
     <TextView
         android:id="@+id/nbOfCar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="number of cars"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/cars"
-        app:layout_constraintEnd_toStartOf="@id/cars"
-        app:layout_constraintTop_toTopOf="@id/cars"
-        />
+        app:layout_constraintEnd_toEndOf="@id/lum"
+        app:layout_constraintStart_toStartOf="@id/lum"
+        app:layout_constraintTop_toTopOf="@id/cars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

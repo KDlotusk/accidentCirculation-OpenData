@@ -1,9 +1,9 @@
 package fr.iutlyon1.theo.accidentcirculationprojetopendata.modele
 
-import java.util.*
+import java.io.Serializable
 import kotlin.collections.ArrayList
 
-class Accident(
+class Accident (
     val id : String,
     val date : String,
 
@@ -12,4 +12,4 @@ class Accident(
     val location: Location,
 
     val description : String = ""
-    )
+    ): Serializable

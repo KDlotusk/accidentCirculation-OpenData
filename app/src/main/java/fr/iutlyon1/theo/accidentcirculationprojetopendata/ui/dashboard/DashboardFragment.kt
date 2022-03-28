@@ -1,28 +1,34 @@
 package fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.dashboard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridView
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.R
-import fr.iutlyon1.theo.accidentcirculationprojetopendata.api.ApiConnectAsyncTask
+import fr.iutlyon1.theo.accidentcirculationprojetopendata.api.ApiConnectDashboardAsyncTask
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.databinding.FragmentDashboardBinding
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.adapters.AccidentListAdapter
 
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
+    private lateinit var swipeRefreshLayout : SwipeRefreshLayout
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onPause() {
+        super.onPause()
+        swipeRefreshLayout.isRefreshing = false
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,19 +47,22 @@ class DashboardFragment : Fragment() {
 
         val gridView: GridView = binding.DashBoardGridView
 
-        val noInternetImageView : ImageView = binding.DashBoardNoInternetImageView
+        //val noInternetImageView : ImageView = binding.DashBoardNoInternetImageView
 
         //set the gridView
         gridView.adapter = adapter
         gridView.numColumns = 2
         gridView.stretchMode = GridView.STRETCH_COLUMN_WIDTH
         gridView.visibility = View.VISIBLE
+        gridView.horizontalSpacing = 10
+        gridView.verticalSpacing = 10
 
         //set the image view
-        noInternetImageView.visibility = View.GONE
+        //noInternetImageView.visibility = View.GONE
 
         //deals with data
-        val swipeRefreshLayout= binding.swipeRefreshDashboard
+        swipeRefreshLayout= binding.swipeRefreshDashboard
+
 
 
         swipeRefreshLayout.setColorSchemeResources(
@@ -64,7 +73,7 @@ class DashboardFragment : Fragment() {
         )
         swipeRefreshLayout.setOnRefreshListener {
             gridView.bringToFront()
-            noInternetImageView.visibility = View.GONE
+            //noInternetImageView.visibility = View.GONE
 
             adapter.print()
 
@@ -73,6 +82,7 @@ class DashboardFragment : Fragment() {
 
 
         if(dashboardViewModel.accidents.isEmpty()) {
+            Log.e("sale", "sale")
             loadData(adapter, dashboardViewModel, swipeRefreshLayout)
         }
 
@@ -81,12 +91,11 @@ class DashboardFragment : Fragment() {
     }
 
     private fun loadData(adapter : AccidentListAdapter, dashboardViewModel : DashboardViewModel, swipeRefreshLayout : SwipeRefreshLayout) {
-        dashboardViewModel.nbRws+=10
-
-        val asyncTask = ApiConnectAsyncTask(activity as FragmentActivity, swipeRefreshLayout)
+        dashboardViewModel.end+=100
+        dashboardViewModel.start+=100
+        val asyncTask = ApiConnectDashboardAsyncTask(activity as FragmentActivity, swipeRefreshLayout, adapter)
         asyncTask.execute(
             dashboardViewModel.url,
-            adapter,
             dashboardViewModel.accidents
         )
     }

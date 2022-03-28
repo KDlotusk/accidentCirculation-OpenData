@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.notifications.NotificationsFragment"
+        android:name="fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.map.MapFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_map" />
 </navigation>

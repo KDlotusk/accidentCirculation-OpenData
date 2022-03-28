@@ -16,8 +16,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            />
+            android:paddingBottom="50dp"
 
+            />
+<!--
         <ImageView
             android:id="@+id/DashBoardNoInternetImageView"
             android:layout_width="wrap_content"
@@ -31,6 +33,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
+            -->
 
 
 

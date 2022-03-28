@@ -1,5 +1,7 @@
 package fr.iutlyon1.theo.accidentcirculationprojetopendata.modele
 
+import java.io.Serializable
+
 class Address(
     val adr : String,
     val dep : String,
@@ -8,4 +10,4 @@ class Address(
     val lat: Long,
     val long: Long,
 
-)
+): Serializable
