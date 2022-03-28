@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
 
         webView.webViewClient = WebViewClient()
 
-        webView.loadUrl("https://google.com")
+        webView.loadUrl("https://www.20minutes.fr/dossier/accident_de_la_route")
         return root
 
     }
