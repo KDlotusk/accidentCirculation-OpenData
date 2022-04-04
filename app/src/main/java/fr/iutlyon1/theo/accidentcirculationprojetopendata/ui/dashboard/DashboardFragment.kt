@@ -1,5 +1,6 @@
 package fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,10 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import fr.iutlyon1.theo.accidentcirculationprojetopendata.AccidentDetails
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.R
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.api.ApiConnectDashboardAsyncTask
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.databinding.FragmentDashboardBinding
 import fr.iutlyon1.theo.accidentcirculationprojetopendata.ui.adapters.AccidentListAdapter
+
 
 class DashboardFragment : Fragment() {
 
@@ -57,13 +60,16 @@ class DashboardFragment : Fragment() {
         gridView.horizontalSpacing = 10
         gridView.verticalSpacing = 10
 
+        gridView.setOnItemClickListener { adapterView, view, i, l ->
+            val intent = Intent(activity, AccidentDetails::class.java)
+            startActivity(intent)
+        }
+
         //set the image view
         //noInternetImageView.visibility = View.GONE
 
         //deals with data
         swipeRefreshLayout= binding.swipeRefreshDashboard
-
-
 
         swipeRefreshLayout.setColorSchemeResources(
             R.color.holo_blue_bright,
@@ -85,6 +91,9 @@ class DashboardFragment : Fragment() {
             Log.e("sale", "sale")
             loadData(adapter, dashboardViewModel, swipeRefreshLayout)
         }
+
+
+
 
 
         return root
